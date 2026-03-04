@@ -1016,10 +1016,10 @@
 
   <canvas id="particleCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:4;"></canvas>
 
-  <img class="soft-photo" src="/images/Monen-Omar.jpg" alt="">
+  <img class="soft-photo" src="images/Monen-Omar.jpg" alt="">
   <div class="soft-photo-tint"></div>
 
-  <img class="chaos-photo" src="/images/Shony-1.jpg" alt="">
+  <img class="chaos-photo" src="images/Shony-1.jpg" alt="">
   <div class="chaos-photo-tint"></div>
   <div class="shony-label">Shony is watching.</div>
 
@@ -1036,7 +1036,7 @@
 
   <!-- Shony -->
   <button id="shony" aria-label="Shony">
-    <img src="/images/Shony-2.jpg" alt="Shony">
+    <img src="images/Shony-2.jpg" alt="Shony">
   </button>
   <div id="shony-tip"></div>
 
@@ -1483,8 +1483,8 @@
       shonyTip._t = setTimeout(() => shonyTip.classList.remove('show'), 3800);
     });
 
-    const audioStart = new Audio('/audio/start.mp3');
-    const audioEnd   = new Audio('/audio/end.mp3');
+    const audioStart = new Audio('audio/start.mp3');
+    const audioEnd   = new Audio('audio/end.mp3');
 
     function playStart() { audioStart.currentTime = 0; audioStart.play().catch(() => {}); }
     function playEnd()   { audioEnd.currentTime = 0;   audioEnd.play().catch(() => {}); }
@@ -1597,12 +1597,12 @@
       if (mode === 'soft') {
         const num = nextFromDeck(photoDeck);
         const img = document.createElement('img');
-        img.src = `/photos/us-${num}.jpg`;
+        img.src = `photos/us-${num}.jpg`;
         surpriseMedia.appendChild(img);
       } else {
         const num = nextFromDeck(videoDeck);
         const vid = document.createElement('video');
-        vid.src = `/videos/sealion-${num}.mp4`;
+        vid.src = `videos/sealion-${num}.mp4`;
         vid.autoplay = true;
         vid.playsInline = true;
         vid.controls = false;
