@@ -1023,7 +1023,6 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      animation: splashFadeOut 0.8s ease 3.5s forwards;
     }
 
     .splash-screen.chaos-active {
@@ -1311,7 +1310,24 @@
     const splashSoftBtn = document.getElementById('splashSoft');
     const splashChaosBtn = document.getElementById('splashChaos');
 
+    splashSoftBtn.addEventListener('mouseenter', () => {
+      splashScreen.style.background = '#fdf0ec';
+    });
+
+    splashSoftBtn.addEventListener('mouseleave', () => {
+      splashScreen.style.background = '#fdf0ec';
+    });
+
+    splashChaosBtn.addEventListener('mouseenter', () => {
+      splashScreen.style.background = '#0a0500';
+    });
+
+    splashChaosBtn.addEventListener('mouseleave', () => {
+      splashScreen.style.background = '#fdf0ec';
+    });
+
     splashSoftBtn.addEventListener('click', () => {
+      stopParticles();
       setMode('soft');
       splashScreen.style.animation = 'splashFadeOut 0.6s ease forwards';
       setTimeout(() => {
@@ -1320,26 +1336,15 @@
     });
 
     splashChaosBtn.addEventListener('click', () => {
-      splashScreen.classList.add('chaos-active');
+      stopParticles();
+      setMode('chaos');
+      splashScreen.style.animation = 'splashFadeOut 0.6s ease forwards';
       setTimeout(() => {
-        setMode('chaos');
-        splashScreen.style.animation = 'splashFadeOut 0.6s ease forwards';
-        setTimeout(() => {
-          splashScreen.style.display = 'none';
-        }, 600);
-      }, 300);
+        splashScreen.style.display = 'none';
+      }, 600);
     });
 
-    // Auto-hide splash after 4.5 seconds if no click (defaults to soft)
-    setTimeout(() => {
-      if (splashScreen.style.display !== 'none') {
-        splashScreen.style.animation = 'splashFadeOut 0.6s ease forwards';
-        setTimeout(() => {
-          splashScreen.style.display = 'none';
-          setMode('soft');
-        }, 600);
-      }
-    }, 4500);
+
 
     // ══════════════════════════════════════
     // ══════════════════════════════════════
@@ -1989,7 +1994,6 @@
       }, 200);
     }
 
-    setMode('soft');
   </script>
 </body>
 </html>
