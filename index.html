@@ -290,68 +290,25 @@
     }
 
     /* MEMORY DETAIL PAGE */
-    .memory-detail-page {
-      display: none !important;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      background: #222 !important;
-      z-index: 9999 !important;
-      overflow-y: auto !important;
-      flex-direction: column;
-      align-items: center;
-      padding: 60px 20px 40px;
-    }
-    
-    .memory-detail-page.active {
-      display: flex !important;
+    /* MEMORY DETAIL MODAL */
+    #memoryDetailModal .modal-content {
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
 
-    .memory-detail-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      background: #222;
-      z-index: 10000;
-    }
-
-    .detail-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .detail-action-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1px solid #666;
-      font-size: 18px;
-      cursor: pointer;
-      background: #333;
-      color: #fff;
-    }
-
-    .memory-detail-content {
-      width: 100%;
-      max-width: 650px;
+    .memory-modal-content {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 30px;
+      gap: 20px;
     }
 
     .detail-media-container {
       width: 100%;
-      max-width: 600px;
       border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     }
 
     .detail-media-container img,
@@ -359,11 +316,11 @@
       width: 100%;
       height: auto;
       display: block;
+      border-radius: 12px;
     }
 
     .detail-caption-container {
       width: 100%;
-      max-width: 600px;
       text-align: center;
     }
 
@@ -371,9 +328,70 @@
       font-family: 'Playfair Display', serif;
       font-size: 16px;
       font-style: italic;
-      color: #ccc;
-      margin: 0;
       line-height: 1.6;
+      margin: 0;
+    }
+
+    body.soft .detail-caption { color: #5a3028; }
+    body.chaos .detail-caption { color: #ffaa55; }
+
+    .memory-modal-buttons {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+      padding-top: 10px;
+    }
+
+    .btn-action {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    body.soft .edit-btn {
+      background: rgba(232, 160, 140, 0.3);
+      color: #8b5040;
+      border: 1px solid rgba(232, 160, 140, 0.5);
+    }
+    body.soft .edit-btn:hover {
+      background: rgba(232, 160, 140, 0.5);
+      transform: translateY(-2px);
+    }
+
+    body.soft .delete-btn {
+      background: rgba(200, 80, 60, 0.2);
+      color: #a04030;
+      border: 1px solid rgba(200, 80, 60, 0.3);
+    }
+    body.soft .delete-btn:hover {
+      background: rgba(200, 80, 60, 0.35);
+      transform: translateY(-2px);
+    }
+
+    body.chaos .edit-btn {
+      background: rgba(255, 110, 0, 0.2);
+      color: #ff8844;
+      border: 1px solid rgba(255, 110, 0, 0.4);
+    }
+    body.chaos .edit-btn:hover {
+      background: rgba(255, 110, 0, 0.35);
+      transform: translateY(-2px);
+    }
+
+    body.chaos .delete-btn {
+      background: rgba(200, 80, 60, 0.2);
+      color: #ff7744;
+      border: 1px solid rgba(200, 80, 60, 0.3);
+    }
+    body.chaos .delete-btn:hover {
+      background: rgba(200, 80, 60, 0.35);
+      transform: translateY(-2px);
     }
     }
     body.chaos .delete-btn:hover {
@@ -1441,20 +1459,20 @@
 
     <button id="addMemoryBtn" class="add-memory-btn">+ Add memory</button>
 
-    <!-- MEMORY DETAIL PAGE -->
-    <div id="memoryDetailPage" class="memory-detail-page">
-      <div class="memory-detail-header">
-        <button id="backFromDetail" class="back-btn">← back</button>
-        <div class="detail-actions">
-          <button id="editMemoryBtn" class="detail-action-btn edit-btn" title="Edit">✏️</button>
-          <button id="deleteMemoryBtn" class="detail-action-btn delete-btn" title="Delete">🗑️</button>
-        </div>
-      </div>
-
-      <div class="memory-detail-content">
+    <!-- MEMORY DETAIL MODAL -->
+    <div id="memoryDetailModal" class="modal">
+      <div class="modal-content memory-modal-content">
+        <button id="closeDetailModal" class="close-btn">✕</button>
+        
         <div id="detailMediaContainer" class="detail-media-container"></div>
+        
         <div id="detailCaptionContainer" class="detail-caption-container">
           <p id="detailCaption" class="detail-caption"></p>
+        </div>
+
+        <div class="modal-buttons memory-modal-buttons">
+          <button id="editMemoryBtn" class="btn-action edit-btn" title="Edit">✏️ Edit</button>
+          <button id="deleteMemoryBtn" class="btn-action delete-btn" title="Delete">🗑️ Delete</button>
         </div>
       </div>
     </div>
@@ -1732,74 +1750,49 @@
     }
 
     function openMemoryDetail(memoryId, memory) {
-      console.log('Opening memory detail:', memoryId, memory);
+      console.log('Opening memory detail modal:', memoryId, memory);
       
-      const detailPage = document.getElementById('memoryDetailPage');
-      const memoriesPage = document.getElementById('memoriesPage');
+      const detailModal = document.getElementById('memoryDetailModal');
       const detailMediaContainer = document.getElementById('detailMediaContainer');
       const detailCaption = document.getElementById('detailCaption');
       const editMemoryBtn = document.getElementById('editMemoryBtn');
       const deleteMemoryBtn = document.getElementById('deleteMemoryBtn');
-
-      if (!detailMediaContainer) {
-        console.error('Detail media container not found!');
-        return;
-      }
 
       // Set media
       detailMediaContainer.innerHTML = '';
       if (memory.type === 'image') {
         const img = document.createElement('img');
         img.src = memory.url;
-        img.onerror = () => console.error('Image failed to load:', memory.url);
         detailMediaContainer.appendChild(img);
-        console.log('Added image:', memory.url);
       } else {
         const vid = document.createElement('video');
         vid.src = memory.url;
         vid.controls = true;
         detailMediaContainer.appendChild(vid);
-        console.log('Added video:', memory.url);
       }
 
       // Set caption
       detailCaption.textContent = memory.caption || 'No description added';
-      console.log('Set caption:', memory.caption);
 
       // Setup edit/delete buttons
-      editMemoryBtn.onclick = () => openEditModal(memoryId, memory);
+      editMemoryBtn.onclick = () => {
+        detailModal.classList.remove('active');
+        openEditModal(memoryId, memory);
+      };
       deleteMemoryBtn.onclick = () => {
         if (confirm('Delete this memory?')) {
-          deleteMemoryConfirmed(memoryId);
+          deleteMemoryConfirmed(memoryId, detailModal);
         }
       };
 
-      // Show detail page
-      console.log('Showing detail page, hiding memories page');
-      memoriesPage.classList.remove('active');
-      detailPage.classList.add('active');
-      console.log('Detail page active class:', detailPage.classList.contains('active'));
+      // Show modal
+      detailModal.classList.add('active');
     }
 
-    function closeMemoryDetail() {
-      const detailPage = document.getElementById('memoryDetailPage');
-      const memoriesPage = document.getElementById('memoriesPage');
-      detailPage.classList.remove('active');
-      memoriesPage.classList.add('active');
-      loadMemories();
-    }
-
-    async function deleteMemoryConfirmed(memoryId) {
-      try {
-        await db.collection('memories').doc(memoryId).delete();
-        closeMemoryDetail();
-      } catch (error) {
-        console.error('Error deleting:', error);
-        alert('Error deleting memory.');
-      }
-    }
-
-    document.getElementById('backFromDetail').addEventListener('click', closeMemoryDetail);
+    // Close detail modal
+    document.getElementById('closeDetailModal').addEventListener('click', () => {
+      document.getElementById('memoryDetailModal').classList.remove('active');
+    });
 
     function openEditModal(memoryId, memory) {
       editingMemoryId = memoryId;
