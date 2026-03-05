@@ -294,14 +294,17 @@
     #memoryDetailModal .modal-content {
       max-width: 600px;
       max-height: 90vh;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     .memory-modal-content {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
+      gap: 0;
+      height: 100%;
     }
 
     .detail-media-container {
@@ -309,18 +312,24 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      flex-shrink: 0;
+      max-height: 50vh;
     }
 
     .detail-media-container img,
     .detail-media-container video {
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: contain;
       display: block;
       border-radius: 12px;
     }
 
     .detail-caption-container {
       width: 100%;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
       text-align: center;
     }
 
@@ -340,7 +349,9 @@
       gap: 12px;
       width: 100%;
       justify-content: center;
-      padding-top: 10px;
+      padding: 16px;
+      flex-shrink: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .btn-action {
@@ -1210,6 +1221,7 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
+      transition: background 0.4s ease;
     }
 
     .splash-screen.chaos-active {
@@ -1232,10 +1244,6 @@
       animation: splashGreetingFloat 2s ease-in-out infinite;
     }
 
-    .splash-screen.chaos-active .splash-greeting {
-      color: #fff3e0;
-    }
-
     .heart {
       display: inline-block;
       animation: heartBeat 1.5s ease-in-out infinite;
@@ -1249,10 +1257,6 @@
       margin-bottom: 48px;
       letter-spacing: 0.03em;
       opacity: 0.9;
-    }
-
-    .splash-screen.chaos-active .splash-question {
-      color: #ffaa55;
     }
 
     .splash-buttons {
@@ -1516,20 +1520,33 @@
     const splashChaosBtn = document.getElementById('splashChaos');
 
     splashSoftBtn.addEventListener('mouseenter', () => {
-      splashScreen.style.background = '#fdf0ec';
+      splashScreen.style.background = 'linear-gradient(135deg, #fdf0ec 0%, #fff5f2 100%)';
+      particleMode = 'soft';
+      startSoftParticles();
     });
 
     splashSoftBtn.addEventListener('mouseleave', () => {
-      splashScreen.style.background = '#fdf0ec';
+      stopParticles();
+      resetSplashBackground();
     });
 
     splashChaosBtn.addEventListener('mouseenter', () => {
-      splashScreen.style.background = '#0a0500';
+      splashScreen.style.background = 'linear-gradient(135deg, #0a0500 0%, #1a0a00 100%)';
+      particleMode = 'chaos';
+      startChaosParticles();
     });
 
     splashChaosBtn.addEventListener('mouseleave', () => {
-      splashScreen.style.background = '#fdf0ec';
+      stopParticles();
+      resetSplashBackground();
     });
+
+    function resetSplashBackground() {
+      splashScreen.style.background = 'linear-gradient(135deg, #fdf0ec 0%, #fff5f2 100%)';
+    }
+
+    // Set initial background
+    resetSplashBackground();
 
     splashSoftBtn.addEventListener('click', () => {
       stopParticles();
@@ -1793,6 +1810,17 @@
     document.getElementById('closeDetailModal').addEventListener('click', () => {
       document.getElementById('memoryDetailModal').classList.remove('active');
     });
+
+    async function deleteMemoryConfirmed(memoryId, modal) {
+      try {
+        await db.collection('memories').doc(memoryId).delete();
+        if (modal) modal.classList.remove('active');
+        loadMemories();
+      } catch (error) {
+        console.error('Error deleting:', error);
+        alert('Error deleting memory.');
+      }
+    }
 
     function openEditModal(memoryId, memory) {
       editingMemoryId = memoryId;
