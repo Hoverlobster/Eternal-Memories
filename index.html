@@ -425,12 +425,12 @@
         justify-content: center;
       }
 
-      /* SURPRISE BUTTON - Always visible, positioned higher to not overlap add memory btn */
+      /* SURPRISE BUTTON - Always visible, TOP-RIGHT to avoid blocking add memory btn */
       #surpriseBtn {
         display: flex !important;
         position: fixed;
-        bottom: 80px;
-        left: 20px;
+        top: 20px;
+        right: 20px;
         z-index: 99;
       }
 
@@ -497,6 +497,24 @@
           right: 16px;
           z-index: 10002;
         }
+
+        /* SURPRISE MODAL - portrait */
+        #surprisePanel {
+          width: 90vw;
+          max-width: 400px;
+          max-height: 85vh;
+        }
+
+        #surpriseMedia {
+          max-height: 70vh;
+          width: 100%;
+        }
+
+        #surpriseMedia img,
+        #surpriseMedia video {
+          max-height: 70vh;
+          width: 100%;
+        }
       }
 
       /* LANDSCAPE ORIENTATION */
@@ -525,6 +543,24 @@
           top: 16px;
           right: 16px;
           z-index: 10002;
+        }
+
+        /* SURPRISE MODAL - landscape */
+        #surprisePanel {
+          width: 80vw;
+          max-width: 600px;
+          max-height: 90vh;
+        }
+
+        #surpriseMedia {
+          max-height: 80vh;
+          width: 100%;
+        }
+
+        #surpriseMedia img,
+        #surpriseMedia video {
+          max-height: 80vh;
+          width: 100%;
         }
       }
 
