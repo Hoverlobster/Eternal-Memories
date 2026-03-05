@@ -337,14 +337,20 @@
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       flex-shrink: 0;
-      max-height: 35vh;
+      max-height: 50vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: black;
     }
 
     .detail-media-container img,
     .detail-media-container video {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
       display: block;
       border-radius: 12px;
     }
@@ -424,16 +430,76 @@
         display: flex !important;
       }
 
-      /* Full-screen video on phone */
-      .detail-media-container video {
-        width: 100vw;
-        height: 100vh;
-        object-fit: contain;
-        max-height: none;
+      /* Phone video - show in both orientations */
+      .detail-media-container {
+        max-height: 60vh;
+        width: 100%;
       }
 
+      .detail-media-container video {
+        width: 100%;
+        height: auto;
+        max-height: 60vh;
+        object-fit: contain;
+      }
+
+      /* Close button - positioned ABOVE video in horizontal, dynamic on vertical */
       #memoryDetailModal .close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
         z-index: 10002;
+        background: rgba(0, 0, 0, 0.7);
+        width: 40px;
+        height: 40px;
+      }
+
+      /* On landscape (wider than tall) */
+      @media (orientation: landscape) {
+        #memoryDetailModal .modal-content {
+          flex-direction: row;
+          max-height: 100vh;
+        }
+
+        .detail-media-container {
+          max-height: 100vh;
+          max-width: 70%;
+          flex-shrink: 0;
+        }
+
+        .detail-media-container video {
+          max-height: 100vh;
+        }
+
+        .detail-caption-container {
+          max-width: 30%;
+          flex: 1;
+        }
+
+        #memoryDetailModal .close-btn {
+          top: 16px;
+          right: 16px;
+        }
+      }
+
+      /* On portrait (taller than wide) */
+      @media (orientation: portrait) {
+        #memoryDetailModal .modal-content {
+          flex-direction: column;
+        }
+
+        .detail-media-container {
+          max-height: 50vh;
+        }
+
+        .detail-media-container video {
+          max-height: 50vh;
+        }
+
+        #memoryDetailModal .close-btn {
+          top: 16px;
+          right: 16px;
+        }
       }
     }
 
