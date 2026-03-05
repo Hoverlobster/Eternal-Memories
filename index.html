@@ -425,52 +425,12 @@
         justify-content: center;
       }
 
-      /* SURPRISE BUTTON - Always visible, TOP-RIGHT to avoid blocking add memory btn */
+      /* SURPRISE BUTTON - will be controlled by portrait/landscape media queries below */
       #surpriseBtn {
-        display: flex !important;
         position: fixed;
         top: 20px;
         right: 20px;
         z-index: 99;
-      }
-
-      body.soft #surpriseBtn {
-        display: flex !important;
-      }
-
-      body.chaos #surpriseBtn {
-        display: flex !important;
-      }
-
-      /* OVERRIDE desktop surprise panel positioning for mobile */
-      body.soft #surprisePanel,
-      body.chaos #surprisePanel {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: auto;
-        max-width: 400px;
-        background: rgba(0, 0, 0, 0.98);
-        border-radius: 16px;
-        padding: 16px;
-        z-index: 9998;
-      }
-
-      /* SURPRISE MEDIA - mobile sizing */
-      #surpriseMedia {
-        max-width: 100%;
-        max-height: 55vh;
-        width: 100%;
-        object-fit: contain;
-      }
-
-      #surpriseMedia img,
-      #surpriseMedia video {
-        width: 100%;
-        height: auto;
-        max-height: 55vh;
-        object-fit: contain;
       }
 
       /* MEDIA CONTAINER - show in portrait */
@@ -656,21 +616,27 @@
       }
     }
 
-    /* PORTRAIT MODE - phone sizes */
+    /* PORTRAIT MODE - phone sizes - HIDE SURPRISE */
     @media (max-width: 768px) and (orientation: portrait) {
-      #surprisePanel {
-        width: 90vw;
-        max-width: 400px;
-        max-height: 80vh;
+      #surpriseBtn {
+        display: none !important;
       }
 
-      #surpriseMedia {
-        max-height: 65vh;
+      #surprisePanel {
+        display: none !important;
+      }
+
+      #surprisePanel.visible {
+        display: none !important;
       }
     }
 
-    /* LANDSCAPE MODE - phone sizes */
+    /* LANDSCAPE MODE - phone sizes - SHOW SURPRISE */
     @media (max-width: 768px) and (orientation: landscape) {
+      #surpriseBtn {
+        display: flex !important;
+      }
+
       #surprisePanel {
         width: 85vw;
         max-width: 550px;
