@@ -396,6 +396,8 @@
       height: auto;
       display: block;
       border-radius: 20px;
+      animation: mediaFadeInUp 0.8s ease 0.2s forwards;
+      opacity: 0;
     }
 
     .detail-caption-container {
@@ -422,6 +424,21 @@
       from {
         opacity: 0;
         transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes mediaFadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
       }
       to {
         opacity: 1;
@@ -1396,7 +1413,7 @@
   </div>
 
   <!-- MEMORIES PAGE -->
-  <div id="memoriesPage" class="memories-page">
+  <div id="memoriesPage" class="memories-page active">
     <div class="memories-header">
       <button id="backToHome" class="back-btn">← back</button>
       <h1>Us, eternally</h1>
@@ -1610,11 +1627,17 @@
     });
 
     async function uploadMemory(file, caption) {
+      const saveBtn = document.getElementById('saveMemoryBtn');
+      
       try {
         if (!file) {
           alert('Please select a file');
           return;
         }
+        
+        // Disable button and show loading spinner
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(200,100,80,0.3);border-top-color:#e8a090;border-radius:50%;animation:spin 0.8s linear infinite;"></span>';
         
         console.log('Starting Cloudinary upload...');
         
@@ -1646,11 +1669,21 @@
           type: file.type.startsWith('image') ? 'image' : 'video'
         });
 
-        console.log('Memory saved to Firestore!');
-        alert('Memory saved! 🤍');
+        console.log('Memory saved!');
+        
+        // Reset form silently
+        document.getElementById('memoryFileInput').value = '';
+        document.getElementById('memoryCaptionInput').value = '';
+        modal.classList.remove('active');
+        loadMemories();
+        
       } catch (error) {
         console.error('Error uploading:', error);
-        alert(`Error saving memory: ${error.message}`);
+        alert(`Error: ${error.message}`);
+      } finally {
+        // Re-enable button
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = 'Save Memory';
       }
     }
 
