@@ -425,11 +425,11 @@
         justify-content: center;
       }
 
-      /* SURPRISE BUTTON - Always visible, left side to avoid add memory btn */
+      /* SURPRISE BUTTON - Always visible, positioned higher to not overlap add memory btn */
       #surpriseBtn {
         display: flex !important;
         position: fixed;
-        bottom: 24px;
+        bottom: 80px;
         left: 20px;
         z-index: 99;
       }
@@ -526,6 +526,49 @@
           right: 16px;
           z-index: 10002;
         }
+      }
+
+      /* SURPRISE PANEL - mobile optimized */
+      #surprisePanel {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 90vw !important;
+        max-width: 90vw !important;
+        height: auto !important;
+        max-height: 80vh !important;
+        z-index: 9998 !important;
+        background: rgba(0, 0, 0, 0.95) !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+      }
+
+      #surpriseMedia {
+        max-width: 100% !important;
+        max-height: 60vh !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      #surpriseMedia img,
+      #surpriseMedia video {
+        width: 100% !important;
+        height: auto !important;
+        max-height: 60vh !important;
+        object-fit: contain !important;
+        border-radius: 12px !important;
+        display: block !important;
+        visibility: visible !important;
+      }
+
+      #surpriseClose {
+        position: absolute !important;
+        top: 12px !important;
+        right: 12px !important;
+        z-index: 9999 !important;
       }
     }
 
