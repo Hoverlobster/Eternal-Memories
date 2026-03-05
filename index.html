@@ -297,6 +297,30 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
+    }
+
+    #memoryDetailModal .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 10001;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    #memoryDetailModal .close-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
     }
 
     .memory-modal-content {
@@ -313,14 +337,14 @@
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       flex-shrink: 0;
-      max-height: 50vh;
+      max-height: 45vh;
     }
 
     .detail-media-container img,
     .detail-media-container video {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       display: block;
       border-radius: 12px;
     }
@@ -331,6 +355,14 @@
       overflow-y: auto;
       padding: 16px;
       text-align: center;
+      /* Hide scrollbar but allow scrolling */
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .detail-caption-container::-webkit-scrollbar {
+      display: none;
     }
 
     .detail-caption {
@@ -352,6 +384,61 @@
       padding: 16px;
       flex-shrink: 0;
       border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    /* PHONE-SPECIFIC STYLES */
+    @media (max-width: 768px) {
+      /* Prevent background scroll when modal is open */
+      body.modal-open {
+        overflow: hidden;
+      }
+
+      #memoryDetailModal {
+        overflow: hidden;
+      }
+
+      #memoryDetailModal .modal-content {
+        max-height: 100vh;
+        max-width: 100%;
+        border-radius: 0;
+      }
+
+      .detail-caption-container {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Make surprise button visible on phone */
+      #surpriseBtn {
+        display: block !important;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+      }
+
+      /* Full-screen video on phone */
+      .detail-media-container video {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+        max-height: none;
+      }
+
+      #memoryDetailModal .close-btn {
+        z-index: 10002;
+      }
+    }
+
+    /* DESKTOP STYLES */
+    @media (min-width: 769px) {
+      #memoryDetailModal .modal-content {
+        max-width: 600px;
+        max-height: 80vh;
+      }
+
+      .detail-media-container {
+        max-height: 45vh;
+      }
     }
 
     .btn-action {
@@ -1802,13 +1889,17 @@
         }
       };
 
-      // Show modal
+      // Show modal and prevent background scroll on phone
       detailModal.classList.add('active');
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('modal-open');
+      }
     }
 
     // Close detail modal
     document.getElementById('closeDetailModal').addEventListener('click', () => {
       document.getElementById('memoryDetailModal').classList.remove('active');
+      document.body.classList.remove('modal-open');
     });
 
     async function deleteMemoryConfirmed(memoryId, modal) {
