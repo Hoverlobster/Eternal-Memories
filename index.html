@@ -413,13 +413,25 @@
         -webkit-overflow-scrolling: touch;
       }
 
-      /* Make surprise button visible on phone - override all other rules */
+      /* ADD MEMORY BUTTON - Always visible */
+      #addMemoryBtn {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* SURPRISE BUTTON - Always visible */
       #surpriseBtn {
         display: flex !important;
         position: fixed;
-        bottom: 20px;
+        bottom: 70px;
         right: 20px;
-        z-index: 100;
+        z-index: 99;
       }
 
       body.soft #surpriseBtn {
@@ -430,31 +442,56 @@
         display: flex !important;
       }
 
-      /* Phone video - show in both orientations */
-      .detail-media-container {
-        max-height: 60vh;
-        width: 100%;
+      /* MEMORIES PAGE - full height on mobile */
+      #memoriesPage {
+        padding-bottom: 100px !important;
       }
 
+      /* MEDIA CONTAINER - show in portrait */
+      .detail-media-container {
+        width: 100%;
+        max-height: 50vh;
+        border-radius: 8px;
+      }
+
+      .detail-media-container img,
       .detail-media-container video {
         width: 100%;
         height: auto;
-        max-height: 60vh;
+        max-height: 50vh;
         object-fit: contain;
+        display: block;
       }
 
-      /* Close button - positioned ABOVE video in horizontal, dynamic on vertical */
-      #memoryDetailModal .close-btn {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        z-index: 10002;
-        background: rgba(0, 0, 0, 0.7);
-        width: 40px;
-        height: 40px;
+      /* PORTRAIT ORIENTATION */
+      @media (orientation: portrait) {
+        #memoryDetailModal .modal-content {
+          flex-direction: column;
+          max-height: 100vh;
+        }
+
+        .detail-media-container {
+          max-height: 50vh;
+          width: 100%;
+        }
+
+        .detail-media-container video {
+          max-height: 50vh;
+        }
+
+        .detail-caption-container {
+          max-width: 100%;
+          flex: 1;
+        }
+
+        #memoryDetailModal .close-btn {
+          top: 16px;
+          right: 16px;
+          z-index: 10002;
+        }
       }
 
-      /* On landscape (wider than tall) */
+      /* LANDSCAPE ORIENTATION */
       @media (orientation: landscape) {
         #memoryDetailModal .modal-content {
           flex-direction: row;
@@ -479,26 +516,7 @@
         #memoryDetailModal .close-btn {
           top: 16px;
           right: 16px;
-        }
-      }
-
-      /* On portrait (taller than wide) */
-      @media (orientation: portrait) {
-        #memoryDetailModal .modal-content {
-          flex-direction: column;
-        }
-
-        .detail-media-container {
-          max-height: 50vh;
-        }
-
-        .detail-media-container video {
-          max-height: 50vh;
-        }
-
-        #memoryDetailModal .close-btn {
-          top: 16px;
-          right: 16px;
+          z-index: 10002;
         }
       }
     }
@@ -1647,7 +1665,7 @@
       <div class="modal-content">
         <button id="closeUploadModal" class="close-btn">✕</button>
         <h2>Add a Memory</h2>
-        <input type="file" id="memoryFileInput" accept="image/*,video/*" capture="environment" multiple />
+        <input type="file" id="memoryFileInput" accept="image/*,video/*" multiple />
         <textarea id="memoryCaptionInput" placeholder="Add a caption (optional)..."></textarea>
         <div class="modal-buttons">
           <button id="cancelUpload" class="btn-cancel">Cancel</button>
@@ -1835,11 +1853,16 @@
     });
 
     async function uploadMemory(file, caption) {
-      const saveBtn = document.getElementById('saveMemoryBtn');
+      const saveBtn = document.getElementById('confirmUpload');
       
       try {
         if (!file) {
           alert('Please select a file');
+          return;
+        }
+        
+        if (!saveBtn) {
+          console.error('Save button not found');
           return;
         }
         
@@ -1882,7 +1905,8 @@
         // Reset form silently
         document.getElementById('memoryFileInput').value = '';
         document.getElementById('memoryCaptionInput').value = '';
-        modal.classList.remove('active');
+        const uploadModal = document.getElementById('uploadModal');
+        uploadModal.classList.remove('active');
         loadMemories();
         
       } catch (error) {
@@ -1890,8 +1914,10 @@
         alert(`Error: ${error.message}`);
       } finally {
         // Re-enable button
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = 'Save Memory';
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = 'Save Memory';
+        }
       }
     }
 
