@@ -1720,6 +1720,8 @@
     }
 
     function openMemoryDetail(memoryId, memory) {
+      console.log('Opening memory detail:', memoryId, memory);
+      
       const detailPage = document.getElementById('memoryDetailPage');
       const memoriesPage = document.getElementById('memoriesPage');
       const detailMediaContainer = document.getElementById('detailMediaContainer');
@@ -1727,21 +1729,30 @@
       const editMemoryBtn = document.getElementById('editMemoryBtn');
       const deleteMemoryBtn = document.getElementById('deleteMemoryBtn');
 
+      if (!detailMediaContainer) {
+        console.error('Detail media container not found!');
+        return;
+      }
+
       // Set media
       detailMediaContainer.innerHTML = '';
       if (memory.type === 'image') {
         const img = document.createElement('img');
         img.src = memory.url;
+        img.onerror = () => console.error('Image failed to load:', memory.url);
         detailMediaContainer.appendChild(img);
+        console.log('Added image:', memory.url);
       } else {
         const vid = document.createElement('video');
         vid.src = memory.url;
         vid.controls = true;
         detailMediaContainer.appendChild(vid);
+        console.log('Added video:', memory.url);
       }
 
       // Set caption
       detailCaption.textContent = memory.caption || 'No description added';
+      console.log('Set caption:', memory.caption);
 
       // Setup edit/delete buttons
       editMemoryBtn.onclick = () => openEditModal(memoryId, memory);
@@ -1752,8 +1763,10 @@
       };
 
       // Show detail page
+      console.log('Showing detail page, hiding memories page');
       memoriesPage.classList.remove('active');
       detailPage.classList.add('active');
+      console.log('Detail page active class:', detailPage.classList.contains('active'));
     }
 
     function closeMemoryDetail() {
