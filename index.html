@@ -337,7 +337,7 @@
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       flex-shrink: 0;
-      max-height: 45vh;
+      max-height: 35vh;
     }
 
     .detail-media-container img,
@@ -407,13 +407,21 @@
         -webkit-overflow-scrolling: touch;
       }
 
-      /* Make surprise button visible on phone */
+      /* Make surprise button visible on phone - override all other rules */
       #surpriseBtn {
-        display: block !important;
+        display: flex !important;
         position: fixed;
         bottom: 20px;
         right: 20px;
         z-index: 100;
+      }
+
+      body.soft #surpriseBtn {
+        display: flex !important;
+      }
+
+      body.chaos #surpriseBtn {
+        display: flex !important;
       }
 
       /* Full-screen video on phone */
@@ -437,7 +445,7 @@
       }
 
       .detail-media-container {
-        max-height: 45vh;
+        max-height: 50vh;
       }
     }
 
