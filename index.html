@@ -1649,6 +1649,11 @@
       50% { transform: translateY(-8px); }
     }
   </style>
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23ffc0cb' width='180' height='180' rx='45'/></svg>">
+    <meta name="theme-color" content="#ffc0cb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Monen%20🐱%22,%22short_name%22:%22Monen%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffc0cb%22,%22theme_color%22:%22%23ffc0cb%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23ffc0cb' width='192' height='192' rx='48'/></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
 </head>
 <body class="soft">
 
@@ -2363,28 +2368,114 @@
       const actualMins = minutes - bufferMins;
       totalTime = actualMins * 60;
       timeRemaining = totalTime;
-      const backByTime = new Date(Date.now() + actualMins * 60 * 1000);
+      
+      // Save timer end time to localStorage for background tracking
+      const endTime = Date.now() + actualMins * 60 * 1000;
+      localStorage.setItem('timerEndTime', endTime);
+      localStorage.setItem('timerActive', 'true');
+      
+      const backByTime = new Date(endTime);
       backByEl.textContent = formatBackBy(backByTime);
       backByEl.classList.add('show');
       ringCont.classList.add('active');
       updateRing();
       showNotification("ya5tn 🧡");
       playStart();
+      
+      // Request notification permission for background timer completion
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+      
       timer = setInterval(() => {
         if (timeRemaining > 0) {
           timeRemaining--;
           updateRing();
         } else {
-          clearInterval(timer);
-          timer = null;
-          ringCont.classList.remove('active');
-          hideBackBy();
-          showNotification("shantora ybntn 😤");
-          playEnd();
-          vibrate();
+          completeBreak();
         }
       }, 1000);
     }
+    
+    function completeBreak() {
+      if (timer) clearInterval(timer);
+      timer = null;
+      timeRemaining = 0;
+      ringCont.classList.remove('active');
+      hideBackBy();
+      
+      // Clear timer from localStorage
+      localStorage.removeItem('timerEndTime');
+      localStorage.removeItem('timerActive');
+      
+      showNotification("shantora ybntn 😤");
+      playEnd();
+      vibrate();
+      
+      // Send push notification
+      sendPushNotification("Break is over! 😤", "Time to get back to work!");
+    }
+
+    function sendPushNotification(title, body) {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, {
+          body: body,
+          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect fill="%23ffc0cb" width="180" height="180" rx="45"/><circle cx="90" cy="70" r="25" fill="%23c97766"/><circle cx="65" cy="95" r="18" fill="%23c97766"/><circle cx="115" cy="95" r="18" fill="%23c97766"/><path d="M 70 120 Q 90 135 110 120" stroke="%23c97766" stroke-width="4" fill="none"/></svg>',
+          badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><circle cx="48" cy="48" r="45" fill="%23ffc0cb"/></svg>',
+          tag: 'monen-timer',
+          requireInteraction: true
+        });
+      }
+    }
+
+    function checkBackgroundTimer() {
+      const timerEndTime = localStorage.getItem('timerEndTime');
+      const timerActive = localStorage.getItem('timerActive');
+      
+      if (timerActive === 'true' && timerEndTime) {
+        const endTime = parseInt(timerEndTime);
+        const now = Date.now();
+        const timeLeft = Math.floor((endTime - now) / 1000);
+        
+        if (timeLeft <= 0) {
+          // Timer should have finished while app was closed
+          completeBreak();
+        } else {
+          // Restore the timer
+          timeRemaining = timeLeft;
+          totalTime = timeLeft; // Approximate, but close enough for UI
+          ringCont.classList.add('active');
+          backByEl.classList.add('show');
+          backByEl.textContent = formatBackBy(new Date(endTime));
+          updateRing();
+          
+          // Restart the interval
+          if (timer) clearInterval(timer);
+          timer = setInterval(() => {
+            if (timeRemaining > 0) {
+              timeRemaining--;
+              updateRing();
+            } else {
+              completeBreak();
+            }
+          }, 1000);
+        }
+      }
+    }
+
+    // Check for background timer on page load
+    window.addEventListener('load', checkBackgroundTimer);
+    
+    // Check for background timer when app comes back to foreground
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && localStorage.getItem('timerActive') === 'true') {
+        checkBackgroundTimer();
+      }
+    });
+    
+    // Also check on app resume (for PWA)
+    window.addEventListener('resume', checkBackgroundTimer);
+    window.addEventListener('pageshow', checkBackgroundTimer);
 
     function endBreak() {
       if (timer) clearInterval(timer);
@@ -2392,6 +2483,11 @@
       timeRemaining = 0;
       ringCont.classList.remove('active');
       hideBackBy();
+      
+      // Clear timer from localStorage
+      localStorage.removeItem('timerEndTime');
+      localStorage.removeItem('timerActive');
+      
       showNotification("shantora ybntn 😤");
       playEnd();
       vibrate();
@@ -2653,6 +2749,39 @@
           if (particleMode === 'chaos') launchFirework();
         }, 9000);
       }, 200);
+    }
+
+    // Register Service Worker for background notifications
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        self.addEventListener('push', event => {
+          const data = event.data ? event.data.json() : { title: 'Monen', body: 'Break timer notification' };
+          self.registration.showNotification(data.title || 'Monen', {
+            body: data.body || 'Your break timer has completed!',
+            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect fill="%23ffc0cb" width="180" height="180" rx="45"/></svg>',
+            badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><circle cx="48" cy="48" r="45" fill="%23ffc0cb"/></svg>',
+            tag: 'monen-notification',
+            requireInteraction: true
+          });
+        });
+        
+        self.addEventListener('notificationclick', event => {
+          event.notification.close();
+          event.waitUntil(clients.matchAll({ type: 'window' }).then(clientList => {
+            for (let client of clientList) {
+              if (client.url === '/' && 'focus' in client) return client.focus();
+            }
+            if (clients.openWindow) return clients.openWindow('/');
+          }));
+        });
+      `;
+      
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+      
+      navigator.serviceWorker.register(swUrl).catch(err => {
+        console.log('Service Worker registration failed:', err);
+      });
     }
 
   </script>
